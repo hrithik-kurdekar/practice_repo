@@ -38,7 +38,7 @@
         - name: Scan Docker Images using Trivy
           run: |
             # Manually list your images here, separated by a space
-            IMAGES="voting_frontend:latest voting_backend:latest"
+            IMAGES="voting_app_frontend:latest voting_app_backend:latest"
             
             for img in $IMAGES; do
               echo "--- Scanning Image: $img ---" >> reports/trivy-scan.txt
