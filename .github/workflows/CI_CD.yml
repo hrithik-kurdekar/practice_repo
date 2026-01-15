@@ -36,7 +36,7 @@
             docker compose build --no-cache --pull
         - name: Scan Docker Images using Trivy
           run: |
-            for voting_app_backend voting_app_frontend; do \
+            for voting_app_backend:latest voting_app_frontend:latest; do \
               docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
               -v $(pwd/reports):/reports \
               trivy image ${img} >> reports/trivy-image-scan.txt;
