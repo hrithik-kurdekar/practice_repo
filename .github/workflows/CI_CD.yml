@@ -28,7 +28,6 @@
           run: |
             docker run --rm \
               -v $(pwd):/workspace \
-              -w /workspace \
               aquasec/trivy fs . > reports/trivy-report.txt
 
         - name: Debug - Where are the files?
