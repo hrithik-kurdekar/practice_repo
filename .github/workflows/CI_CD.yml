@@ -27,7 +27,7 @@
         - name: Running Trivy scan
           run: |
             docker run --rm -v $(pwd):/workspace \
-              aquasec/trivy fs /workspace/backend/app > reports/trivy-report.txt
+              aquasec/trivy fs --scanners vuln /workspace > reports/trivy-report.txt
 
         - name: Uploading Reports
           uses: actions/upload-artifact@v4
