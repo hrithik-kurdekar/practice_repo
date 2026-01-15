@@ -28,19 +28,8 @@
           run: |
             docker run --rm \
             -v $(pwd):/workspace \
-            aquasec/trivy fs \
-            --scanners vuln \
-            --dependency-tree \
-            /workspace \
+            aquasec/trivy fs /workspace \
             > reports/trivy-report.txt
-
-        - name: Debug - Where are the files?
-          run: |
-            echo "Current Directory: $(pwd)"
-            echo "Searching for requirements.txt..."
-            find . -name "requirements.txt"
-            echo "Searching for package.json..."
-            find . -name "package.json"
 
         - name: Uploading Reports
           uses: actions/upload-artifact@v4
