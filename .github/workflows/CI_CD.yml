@@ -1,33 +1,27 @@
-name: DevSecOps CI CD Pipeline
+  name: DevSecOps CI CD Pipeline
 
-on:
-  push:
-    branches: ["main"]
+  on:
+    push:
+      branches: ["main"]
 
-jobs:
-  scanning-and-generate-reports:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  jobs:
+    scanning-and-generate-reports:
+      runs-on: self-hosted
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v4
 
-      - name: Create reports directory
-        run: |
-          mkdir -p ./reports
+        - name: Create reports directory
+          run: |
+            mkdir -p ./reports
 
-      - name: Running pylint scan
-        run: |
-          docker run --rm -v $(pwd):/workspace python:3.11-slim \
-          sh -c "
-            pip install pylint pylint-json2html &&
-            pylint --output-format=json /workspace/backend/app > /workspace/reports/pylint-report.json
-            pylint-json2html -o /workspace/reports/pylint-report.html /workspace/reports/pylint-report.json
-          "
-          echo "Pylint Scan Successful" >> $GITHUB_STEP_SUMMARY
+        - name: Running pylint scan
+          run: |
+            docker run --rm -v $(pwd):/workspace cytopia/pylint /workspace/backend/app > reports/pylint-report.txt || true
 
-      - name: Uploading Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: Scan-Reports
-          path: /workspace/reports
-          
+        - name: Uploading Reports
+          uses: actions/upload-artifact@v4
+          with:
+            name: Scan-Reports
+            path: /reports
+            
