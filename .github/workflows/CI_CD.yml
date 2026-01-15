@@ -31,7 +31,7 @@
             aquasec/trivy fs \
             --scanners vuln \
             --dependency-tree \
-            /workspace/backend /workspace/frontend \
+            /workspace \
             > reports/trivy-report.txt
 
         - name: Debug - Where are the files?
