@@ -27,8 +27,12 @@
         - name: Running Trivy scan
           run: |
             docker run --rm \
-              -v $(pwd):/workspace \
-              aquasec/trivy fs . > reports/trivy-report.txt
+            -v $(pwd):/workspace \
+            aquasec/trivy fs \
+            --scanners vuln \
+            --dependency-tree \
+            /workspace/backend /workspace/frontend \
+            > reports/trivy-report.txt
 
         - name: Debug - Where are the files?
           run: |
