@@ -10,5 +10,6 @@ jobs:
     steps:
       - name: Run simple docker run hello world
         run: |
+          echo Running Docker run to run hello-world program
           docker run -d hello-world
         
