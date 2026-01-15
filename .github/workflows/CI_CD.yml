@@ -17,15 +17,15 @@
 
         - name: Running pylint scan
           run: |
-            docker run --rm -v $(pwd):/workspace cytopia/pylint /workspace/backend/app > reports/pylint-report.txt || true
+            docker run --rm -v $(pwd):/workspace cytopia/pylint /workspace/backend/app > /workspace/reports/pylint-report.txt || true
 
         - name: Running Flake8 scan
           run: |
-            docker run --rm -v $(pwd):/workspace alpine/flake8 ./backend/app > ./reports/flake8-report.txt || true
+            docker run --rm -v $(pwd):/workspace alpine/flake8 /workspace/backend/app > /workspace/reports/flake8-report.txt || true
 
         - name: Uploading Reports
           uses: actions/upload-artifact@v4
           with:
             name: Scan-Reports
-            path: ./reports
+            path: reports/
             
