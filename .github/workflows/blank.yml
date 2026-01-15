@@ -1,0 +1,14 @@
+name: Simple test workflow
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  just_run_docker_run:
+    runs-on: self-hosted
+    steps:
+      - name: Run simple docker run hello world
+        run: |
+          docker run -d hello-world
+        
