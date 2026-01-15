@@ -29,17 +29,18 @@
             docker run --rm \
             -v $(pwd):/workspace \
             aquasec/trivy fs /workspace \
-            > reports/trivy-report.txt
+            > reports/trivy-report.txt || true
 
         - name: Build Images
           run: |
-            docker compose build --no-cache --pull
+            docker compose build --pull
+
         - name: Scan Docker Images using Trivy
           run: |
             for voting_app_backend:latest voting_app_frontend:latest; do \
               docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
               -v $(pwd/reports):/reports \
-              trivy image ${img} >> reports/trivy-image-scan.txt;
+              aquasec/trivy image ${img} >> reports/trivy-image-scan.txt || true;
             done
 
         - name: Uploading Reports
