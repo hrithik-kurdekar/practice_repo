@@ -8,6 +8,11 @@
     scanning-and-generate-reports:
       runs-on: self-hosted
       steps:
+        - name: Hard Cleanup
+          run: |
+            # Delete everything in the current folder before starting
+            sudo rm -rf ..?* .[!.]* *
+
         - name: Checkout Code
           uses: actions/checkout@v4
 
@@ -26,11 +31,26 @@
         - name: Running Trivy scan
           run: |
             docker run --rm -v $(pwd):/workspace \
-              aquasec/trivy fs /workspace > reports/trivy-report.txt
+              aquasec/trivy fs /workspace/backend > reports/trivy-report.txt
 
         - name: Uploading Reports
           uses: actions/upload-artifact@v4
           with:
             name: Scan-Reports
             path: reports/
+
+        # --- DOCKER CLEANUP (HYGIENE) ---
+        - name: Docker System Cleanup
+          if: always()
+          run: |
+            echo "Cleaning up local Docker resources..."
+            # Remove all 'dangling' images, containers, and networks not in use
+            docker system prune -f
+            
+            # Optional: If you want to be aggressive and remove ALL unused images (not just dangling)
+            # docker image prune -a -f --filter "until=24h"
+            
+        - name: Local File Cleanup
+          if: always()
+          run: rm -rf reports
             
