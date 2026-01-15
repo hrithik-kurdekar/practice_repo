@@ -9,38 +9,44 @@
       runs-on: self-hosted
       steps:  
 
-        - name: Checkout Code
-          uses: actions/checkout@v4
+        # - name: Checkout Code
+        #   uses: actions/checkout@v4
 
-        - name: Create reports directory
-          run: |
-            mkdir -p ./reports
+        # - name: Create reports directory
+        #   run: |
+        #     mkdir -p ./reports
 
-        - name: Running pylint scan
-          run: |
-            docker run --rm -v $(pwd):/workspace cytopia/pylint /workspace/backend/app > reports/pylint-report.txt || true
+        # - name: Running pylint scan
+        #   run: |
+        #     docker run --rm -v $(pwd):/workspace cytopia/pylint /workspace/backend/app > reports/pylint-report.txt || true
 
-        - name: Running Flake8 scan
-          run: |
-            docker run --rm -v $(pwd):/workspace alpine/flake8 /workspace/backend/app > reports/flake8-report.txt || true
+        # - name: Running Flake8 scan
+        #   run: |
+        #     docker run --rm -v $(pwd):/workspace alpine/flake8 /workspace/backend/app > reports/flake8-report.txt || true
 
-        - name: Running Trivy scan
-          run: |
-            docker run --rm \
-            -v $(pwd):/workspace \
-            aquasec/trivy fs /workspace \
-            > reports/trivy-report.txt || true
+        # - name: Running Trivy scan
+        #   run: |
+        #     docker run --rm \
+        #     -v $(pwd):/workspace \
+        #     aquasec/trivy fs /workspace \
+        #     > reports/trivy-report.txt || true
 
-        - name: Build Images
-          run: |
-            docker compose build --pull
+        # - name: Build Images
+        #   run: |
+        #     docker compose build --pull
 
         - name: Scan Docker Images using Trivy
           run: |
-            for voting_app_backend:latest voting_app_frontend:latest; do \
+            # Manually list your images here, separated by a space
+            IMAGES="voting_frontend:latest voting_backend:latest"
+            
+            for img in $IMAGES; do
+              echo "--- Scanning Image: $img ---" >> reports/trivy-scan.txt
+              
               docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-              -v $(pwd/reports):/reports \
-              aquasec/trivy image ${img} >> reports/trivy-image-scan.txt || true;
+                aquasec/trivy image --severity HIGH,CRITICAL "$img" >> reports/trivy-scan.txt
+                
+              echo -e "\n-----------------------------------\n" >> reports/trivy-scan.txt
             done
 
         - name: Uploading Reports
@@ -60,7 +66,7 @@
         #     # Optional: If you want to be aggressive and remove ALL unused images (not just dangling)
         #     # docker image prune -a -f --filter "until=24h"
             
-        - name: Local File Cleanup
-          if: always()
-          run: rm -rf reports
+        # - name: Local File Cleanup
+        #   if: always()
+        #   run: rm -rf reports
             
