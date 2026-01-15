@@ -24,10 +24,12 @@
           run: |
             docker run --rm -v $(pwd):/workspace alpine/flake8 /workspace/backend/app > reports/flake8-report.txt || true
 
-        # - name: Running Trivy scan
-        #   run: |
-        #     docker run --rm -v $(pwd):/workspace \
-        #       aquasec/trivy fs --scanners vuln /workspace > reports/trivy-report.txt
+        - name: Running Trivy scan
+          run: |
+            docker run --rm \
+              -v $(pwd):/workspace \
+              -w /workspace \
+              aquasec/trivy fs . > reports/trivy-report.txt
 
         - name: Debug - Where are the files?
           run: |
