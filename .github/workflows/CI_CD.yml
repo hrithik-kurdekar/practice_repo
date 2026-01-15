@@ -25,9 +25,16 @@
 
         - name: Running Trivy scan
           run: |
-            docker run --rm -v $(pwd):/workspace -v $(pwd)/reports:/reports \
-            aquasec/trivy fs --format template --template "@/contrib/html.tpl" \
-            --output /reports/trivy-fs-report.html /workspace
+            docker run --rm \
+              -v $(pwd):/workspace \
+              -v $(pwd)/reports:/reports \
+              aquasec/trivy fs \
+              --exit-code 0 \
+              --vuln-type os,library \
+              --format template \
+              --template "@/contrib/html.tpl" \
+              --output /reports/trivy-fs-report.html \
+              /workspace
 
         - name: Uploading Reports
           uses: actions/upload-artifact@v4
