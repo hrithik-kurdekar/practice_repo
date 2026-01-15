@@ -12,9 +12,9 @@
         # - name: Checkout Code
         #   uses: actions/checkout@v4
 
-        # - name: Create reports directory
-        #   run: |
-        #     mkdir -p ./reports
+        - name: Create reports directory
+          run: |
+            mkdir -p ./reports
 
         # - name: Running pylint scan
         #   run: |
@@ -66,7 +66,7 @@
         #     # Optional: If you want to be aggressive and remove ALL unused images (not just dangling)
         #     # docker image prune -a -f --filter "until=24h"
             
-        # - name: Local File Cleanup
-        #   if: always()
-        #   run: rm -rf reports
+        - name: Local File Cleanup
+          if: always()
+          run: rm -rf reports
             
