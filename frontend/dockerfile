@@ -1,0 +1,16 @@
+FROM node:18-alpine 
+
+ARG APP_HOME="/voting_app_frontend"
+
+RUN mkdir -p ${APP_HOME} && chown -R node:node ${APP_HOME}
+WORKDIR ${APP_HOME}
+
+USER node
+
+COPY --chown=node:node . .
+
+RUN npm install
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

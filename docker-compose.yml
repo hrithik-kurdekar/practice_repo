@@ -1,0 +1,58 @@
+volumes:
+  voting_app_data:
+    name: voting_app_data
+
+networks:
+  voting_app_network:
+    driver: bridge
+
+services:
+  postgres_db:
+    container_name: postgres_db
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: voting_app_db
+    volumes:
+      - voting_app_data:/var/lib/postgresql/data
+    networks:
+      - voting_app_network
+    ports:
+      -  5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin"]
+      interval: 10s
+      retries: 3
+    restart: unless-stopped
+
+  voting_app_backend:
+    container_name: voting_app_backend
+    build: ./backend
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    networks:
+      - voting_app_network
+    ports:
+      - 8000:8000
+    environment:
+      DATABASE_URL: postgresql://admin:secret@postgres_db/voting_app_db
+    entrypoint: ["uvicorn"]
+    command: ["app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  voting_app_frontend:
+    container_name: voting_app_frontend
+    build: ./frontend
+    environment:
+      REACT_APP_API_BASE_URL: http://localhost:8000
+    networks:
+      - voting_app_network
+    ports:
+      - 3000:3000
+    entrypoint: ["npm"]
+    command: ["start"]
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    

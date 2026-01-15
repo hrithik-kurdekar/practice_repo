@@ -1,0 +1,36 @@
+# --- Step 1: Build Dependencies ---
+
+FROM python:3.11-slim AS deps-builder
+
+WORKDIR /build
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ---Stage 2: Build and Run App
+
+FROM python:3.11-slim 
+
+ARG APP_HOME="/voting_app_backend"
+
+ENV PYTHONBUFFERED=1 \
+    PYTHONWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:$PATH"
+
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+WORKDIR ${APP_HOME}
+
+COPY --from=deps-builder /opt/venv /opt/venv
+COPY --chown=appuser:appgroup ./app ./app
+
+USER appuser
+
+EXPOSE 8000
+
+ENTRYPOINT ["uvicorn"]
+CMD ["app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
